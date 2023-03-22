@@ -1,27 +1,27 @@
 # Build the frontend
 FROM node:lts AS frontend-builder
-WORKDIR /app
-COPY frontend/package*.json ./
-RUN npm ci
-COPY frontend .
+WORKDIR /app/frontend
+COPY frontend/src/package*.json ./
+RUN npm install
+COPY frontend/src .
 RUN npm run build
 
 # Build the backend
 FROM node:lts AS backend-builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 COPY . .
-COPY --from=frontend-builder /app/dist ./public
+COPY --from=frontend-builder /app/frontend/dist ./public
 RUN npm run build
 
 # Create the final image
 FROM node:lts
 WORKDIR /app
 COPY --from=backend-builder /app .
-COPY backup.sh /data/backup.sh
+COPY backup.sh /app/backup.sh
 COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /data/backup.sh
+RUN chmod +x /app/backup.sh
 RUN chmod +x /app/entrypoint.sh
 
 VOLUME /data

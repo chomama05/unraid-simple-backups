@@ -1,5 +1,6 @@
 <template>
   <div>
+    <v-snackbar v-model="snackbar" color="error" top>{{ snackbarMessage }}</v-snackbar>
     <h1>Backup Configurator</h1>
     <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
       <v-text-field
@@ -30,7 +31,33 @@
       ></v-select>
       <v-btn type="submit" :disabled="!valid" color="primary">Submit</v-btn>
     </v-form>
-    <v-data-table
+
+    <v-table density="compact">
+      <thead>
+        <tr>
+          <th class="text-left" v-for="header in headers">
+            {{ header.text }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="backup in backups"
+          :key="backup.id"
+        >
+          <td>{{ backup.source }}</td>
+          <td>{{ backup.destination }}</td>
+          <td>{{ backup.frequency }}</td>
+          <td>{{ backup.type }}</td>
+          <td>
+            <v-btn small color="primary" @click="editItem(backup)">Edit</v-btn>
+            <v-btn small color="error" @click="deleteItem(backup)">Delete</v-btn>
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
+
+    <!-- <v-table
       :headers="headers"
       :items="backups"
       :loading="loading"
@@ -41,8 +68,7 @@
         <v-btn small color="primary" @click="editItem(item)">Edit</v-btn>
         <v-btn small color="error" @click="deleteItem(item)">Delete</v-btn>
       </template>
-    </v-data-table>
-    <v-snackbar v-model="snackbar" color="error" top>{{ snackbarMessage }}</v-snackbar>
+    </v-table> -->
   </div>
 </template>
 
@@ -53,6 +79,7 @@ export default {
   name: 'BackupConfigurator',
   data() {
     return {
+      snackbar: false,
       valid: false,
       form: {
         source: '',
@@ -96,19 +123,22 @@ export default {
         this.fetchBackups();
       } catch (error) {
         console.error('Error creating or updating backup configuration:', error);
-        showError(error);
+        this.showError(error);
       } finally {
         this.loading = false;
       }
     },
     async fetchBackups() {
       this.loading = true;
+      this.backups = [{source: '/mnt/user/rapid_appdata', destination: '/mnt/user/Backup', frequency: 'daily', type: 'full'}];
+      this.loading = false;
+      return;
       try {
         const response = await axios.get('/api/backups');
         this.backups = response.data;
       } catch (error) {
         console.error('Error fetching backups:', error);
-        showError(error);
+        this.showError(error);
       } finally {
         this.loading = false;
       }
@@ -123,7 +153,7 @@ export default {
         this.fetchBackups();
       } catch (error) {
         console.error('Error deleting backup configuration:', error);
-        showError(error);
+        this.showError(error);
       } finally {
         this.loading = false;
       }
