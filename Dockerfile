@@ -1,29 +1,31 @@
-# Use the official Node.js LTS image as the base image
-FROM node:lts
-
-# Set the working directory
+# Build the frontend
+FROM node:lts AS frontend-builder
 WORKDIR /app
-
-# Install required utilities (tar, rsync, cron, and SQLite)
-RUN apt-get update && \
-    apt-get install -y tar rsync cron sqlite3 nano && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
-
-# Install the Node.js dependencies
+COPY frontend/package*.json ./
 RUN npm ci
+COPY frontend .
+RUN npm run build
 
-# Copy the application source code to the working directory
+# Build the backend
+FROM node:lts AS backend-builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
 COPY . .
+COPY --from=frontend-builder /app/dist ./public
+RUN npm run build
 
-# Create a volume for the SQLite database
+# Create the final image
+FROM node:lts
+WORKDIR /app
+COPY --from=backend-builder /app .
+COPY backup.sh /data/backup.sh
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /data/backup.sh
+RUN chmod +x /app/entrypoint.sh
+
 VOLUME /data
 
-# Expose the application port
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "start"]
+CMD ["/app/entrypoint.sh"]
