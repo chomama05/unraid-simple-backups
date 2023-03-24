@@ -1,22 +1,22 @@
-import express from 'express';
-import http from 'http';
-import { Server as WebSocketServer } from 'ws';
-import { createCronJob, updateCronJob } from './cronManager';
-import {
+const express = require('express');
+const http = require('http');
+const { Server: WebSocketServer } = require('ws');
+const { createCronJob, updateCronJob, loadCronJobsFromDatabase } = require('./cronManager');
+const {
   createBackupsTable,
   insertBackup,
   updateBackup,
   getBackups,
   deleteBackup,
-} from './db';
-import { Backup } from './models/Backup';
+} = require('./db');
+const { Backup } = require('./models/Backup');
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static('frontend/dist'));
 
 // Express routes
 app.post('/api/backups', async (req, res) => {
@@ -64,6 +64,7 @@ wss.on('connection', (ws) => {
 (async () => {
   // Initialize database
   await createBackupsTable();
+  await loadCronJobsFromDatabase();
 
   // Start the server
   const port = process.env.PORT || 3000;

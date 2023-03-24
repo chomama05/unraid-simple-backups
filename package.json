@@ -4,9 +4,9 @@
   "description": "Unraid backup application",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/index.js",
-    "build": "tsc",
-    "dev": "ts-node-dev --respawn index.ts",
+    "dev-rebuild-fe": "NODE_ENV=development cd frontend/src && npm run build && cd ../.. && node index.js",
+    "dev": "NODE_ENV=development node index.js",
+    "start": "NODE_ENV=production node index.js",
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {

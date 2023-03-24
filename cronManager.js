@@ -1,11 +1,11 @@
-import { CronJob } from 'cron';
-import { exec } from 'child_process';
-import { Backup } from './models/Backup';
-import { getBackups } from './db';
+const { CronJob } = require('cron');
+const { exec } = require('child_process');
+const { Backup } = require('./models/Backup');
+const { getBackups } = require('./db');
 
-const cronJobs: Map<number, CronJob> = new Map();
+const cronJobs = new Map();
 
-function generateCronPattern(frequency: string) {
+function generateCronPattern(frequency) {
   switch (frequency) {
     case 'daily':
       return '0 0 * * *';
@@ -18,7 +18,7 @@ function generateCronPattern(frequency: string) {
   }
 }
 
-function executeBackup(backup: Backup) {
+function executeBackup(backup) {
     const { id, source, destination, type } = backup;
     const command = `./backup.sh ${id} "${source}" "${destination}" "${type}"`;
   
@@ -29,9 +29,9 @@ function executeBackup(backup: Backup) {
       }
       console.log(`Backup ${id} executed successfully`);
     });
-  }
+}
 
-export function createCronJob(backup: Backup) {
+function createCronJob(backup) {
   const cronPattern = generateCronPattern(backup.frequency);
   const cronJob = new CronJob(cronPattern, () => {
     console.log(`Running backup ${backup.id}`);
@@ -42,7 +42,7 @@ export function createCronJob(backup: Backup) {
   cronJob.start();
 }
 
-export function updateCronJob(backup: Backup) {
+function updateCronJob(backup) {
   const existingCronJob = cronJobs.get(backup.id);
   if (existingCronJob) {
     existingCronJob.stop();
@@ -52,7 +52,7 @@ export function updateCronJob(backup: Backup) {
   createCronJob(backup);
 }
 
-export function deleteCronJob(backupId: number) {
+function deleteCronJob(backupId) {
   const existingCronJob = cronJobs.get(backupId);
   if (existingCronJob) {
     existingCronJob.stop();
@@ -70,4 +70,11 @@ async function loadCronJobsFromDatabase() {
     }
 }
   
-loadCronJobsFromDatabase();
+// loadCronJobsFromDatabase();
+
+module.exports = {
+  createCronJob,
+  updateCronJob,
+  deleteCronJob,
+  loadCronJobsFromDatabase
+};

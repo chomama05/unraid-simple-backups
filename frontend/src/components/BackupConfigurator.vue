@@ -3,6 +3,13 @@
     <v-snackbar v-model="snackbar" color="error" top>{{ snackbarMessage }}</v-snackbar>
     <h1>Backup Configurator</h1>
     <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
+      <v-text-field 
+        v-show="this.form.id"
+        :readonly="true"
+        v-model="form.id"
+        label="Backup ID"
+      ></v-text-field>
+      
       <v-text-field
         v-model="form.source"
         label="Source"
@@ -20,8 +27,23 @@
         :items="frequencies"
         label="Frequency"
         :rules="[requiredRule]"
+        @update:model-value="$event => checkIfValid($event)"
         required
       ></v-select>
+
+      <v-select
+        v-show="form.frequency !== 'daily'"
+        :items="form.frequency === 'weekly' ? dayOptions.slice(0, 7) : dayOptions"
+        v-model="form.selectedDay"
+        :label="form.frequency === 'weekly' ? 'Day of the week' : 'Day of the month'"
+        :disabled="this.form.frequency === 'daily'"
+        outlined
+        :rules="[form.frequency !== 'daily' ? requiredRule : null]"
+        required
+      ></v-select>
+
+      <VueDatePicker time-picker v-model="time" :is-24="false" />
+
       <v-select
         v-model="form.type"
         :items="backupTypes"
@@ -29,7 +51,7 @@
         :rules="[requiredRule]"
         required
       ></v-select>
-      <v-btn type="submit" :disabled="!valid" color="primary">Submit</v-btn>
+      <v-btn type="submit" :disabled="!valid" color="primary">{{ this.form.id ? 'Update' : 'Create' }}</v-btn>
     </v-form>
 
     <v-table density="compact">
@@ -48,6 +70,7 @@
           <td>{{ backup.source }}</td>
           <td>{{ backup.destination }}</td>
           <td>{{ backup.frequency }}</td>
+          <td>{{ backup.selectedTime }}</td>
           <td>{{ backup.type }}</td>
           <td>
             <v-btn small color="primary" @click="editItem(backup)">Edit</v-btn>
@@ -56,19 +79,6 @@
         </tr>
       </tbody>
     </v-table>
-
-    <!-- <v-table
-      :headers="headers"
-      :items="backups"
-      :loading="loading"
-      class="elevation-1"
-      disable-pagination
-    >
-      <template v-slot:item.actions="{ item }">
-        <v-btn small color="primary" @click="editItem(item)">Edit</v-btn>
-        <v-btn small color="error" @click="deleteItem(item)">Delete</v-btn>
-      </template>
-    </v-table> -->
   </div>
 </template>
 
@@ -80,12 +90,16 @@ export default {
   data() {
     return {
       snackbar: false,
-      valid: false,
+      valid: true,
+      time: { hours: 6, minutes: 30},
+      dayOptions: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],
       form: {
         source: '',
         destination: '',
-        frequency: '',
-        type: '',
+        frequency: 'daily',
+        type: 'full',
+        selectedDay: null,
+        selectedTime: "18:30",
       },
       frequencies: ['daily', 'weekly', 'monthly'],
       backupTypes: ['full', 'cumulative'],
@@ -94,6 +108,7 @@ export default {
         { text: 'Source', value: 'source' },
         { text: 'Destination', value: 'destination' },
         { text: 'Frequency', value: 'frequency' },
+        { text: 'Time', value: 'selectedTime' },
         { text: 'Type', value: 'type' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
@@ -106,6 +121,13 @@ export default {
     showError(error) {
       this.snackbarMessage = `An error occurred: ${error.toString()}`;
       this.snackbar = true;
+    },
+    checkIfValid(event){
+      console.log('updated');
+      console.log('event', event);
+      if(this.form.frequency !== 'daily'){
+        this.$refs.form.validate();
+      }
     },
     async submitForm() {
       if (!this.$refs.form.validate()) {
@@ -130,21 +152,31 @@ export default {
     },
     async fetchBackups() {
       this.loading = true;
-      this.backups = [{source: '/mnt/user/rapid_appdata', destination: '/mnt/user/Backup', frequency: 'daily', type: 'full'}];
-      this.loading = false;
-      return;
-      try {
-        const response = await axios.get('/api/backups');
-        this.backups = response.data;
-      } catch (error) {
-        console.error('Error fetching backups:', error);
-        this.showError(error);
-      } finally {
-        this.loading = false;
+
+      if(import.meta.env.MODE === 'development'){
+        // Simulate Loading...
+        setTimeout(() => {
+          this.backups = [{id: 1, source: '/mnt/user/rapid_appdata', destination: '/mnt/user/Backup', frequency: 'daily', selectedTime: "23:00", type: 'full'}];
+          this.loading = false;
+          return;
+        }, 1000);
       }
+      else{
+        try {
+        const response = await axios.get('/api/backups');
+          this.backups = response.data;
+        } catch (error) {
+          console.error('Error fetching backups:', error);
+          this.showError(error);
+        } finally {
+          this.loading = false;
+        }
+      }
+      
     },
     editItem(item) {
       this.form = { ...item };
+      this.time = this.createTimeFromHHmm(item.selectedTime);
     },
     async deleteItem(item) {
       this.loading = true;
@@ -176,11 +208,27 @@ export default {
           break;
       }
     },
+    formatTimeToHHmm(obj) {
+      const hours = obj.hours;
+      const minutes = obj.minutes === 0 ? '00' : obj.minutes;
+      return `${hours}:${minutes}`;
+    },
+    createTimeFromHHmm(timeString) {
+      const [hours, minutes] = timeString.split(':');
+      return { hours: hours, minutes: minutes}
+    }
   },
   mounted() {
+    console.log('MODE: ',import.meta.env.MODE);
     this.fetchBackups();
+    this.$refs.form.validate();
     this.socket = new WebSocket('ws://' + location.host + '/api/ws');
     this.socket.addEventListener('message', this.handleMessage);
+  },
+  watch: {
+    time(newValue){
+      this.form.selectedTime = this.formatTimeToHHmm(newValue);
+    }
   },
   beforeDestroy() {
     if (this.socket) {
