@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  unraid-simple-backups:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: unraid-simple-backups-container
+    ports:
+      - "3000:3000"
+    volumes:
+      - data-volume:/data
+
+volumes:
+  data-volume:

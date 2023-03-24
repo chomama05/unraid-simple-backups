@@ -1,15 +1,25 @@
-import Vue from 'vue';
-import Vuetify from 'vuetify';
-import 'vuetify/dist/vuetify.min.css';
-import App from './App.vue';
-import store from './store';
+/**
+ * main.js
+ *
+ * Bootstraps Vuetify and other plugins then mounts the App`
+ */
 
-Vue.use(Vuetify);
+// Components
+import App from './App.vue'
 
-Vue.config.productionTip = false;
+// Composables
+import { createApp } from 'vue'
 
-new Vue({
-  store,
-  vuetify: new Vuetify(),
-  render: (h) => h(App),
-}).$mount('#app');
+// Plugins
+import { registerPlugins } from '@/plugins'
+
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
+
+const app = createApp(App)
+
+registerPlugins(app)
+
+app.component('VueDatePicker', VueDatePicker);
+
+app.mount('#app')
