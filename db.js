@@ -1,7 +1,6 @@
 const sqlite3 = require('sqlite3');
 const { open, Database } = require('sqlite');
 const { Backup } = require('./models/Backup');
-const { deleteCronJob } = require('./cronManager');
 
 let db;
 
@@ -22,6 +21,8 @@ async function createBackupsTable() {
       source TEXT,
       destination TEXT,
       frequency TEXT,
+      selectedDay TINYINT,
+      selectedTime TEXT,
       type TEXT
     )`
   );
@@ -32,6 +33,7 @@ async function createBackupsTable() {
       source: '/mnt/user/rapid_appdata',
       destination: '/mnt/user/Backup',
       frequency: 'daily',
+      selectedTime: '23:15',
       type: 'full',
     };
 
@@ -48,27 +50,26 @@ async function createBackupsTable() {
 
 // Insert a new backup
 async function insertBackup(backup) {
-  const { source, destination, frequency, type } = backup;
+  const { source, destination, frequency, selectedDay, selectedTime, type } = backup;
   const result = await db.run(
-    `INSERT INTO backups (source, destination, frequency, type) VALUES (?, ?, ?, ?)`,
-    [source, destination, frequency, type]
+    `INSERT INTO backups (source, destination, frequency, selectedDay, selectedTime, type) VALUES (?, ?, ?, ?, ?, ?)`,
+    [source, destination, frequency, selectedDay, selectedTime, type]
   );
   return { ...backup, id: result.lastID };
 }
 
 // Update an existing backup
 async function updateBackup(backup) {
-  const { id, source, destination, frequency, type } = backup;
+  const { id, source, destination, frequency, selectedDay, selectedTime, type } = backup;
   await db.run(
-    `UPDATE backups SET source = ?, destination = ?, frequency = ?, type = ? WHERE id = ?`,
-    [source, destination, frequency, type, id]
+    `UPDATE backups SET source = ?, destination = ?, frequency = ?, selectedDay = ?, selectedTime = ?, type = ? WHERE id = ?`,
+    [source, destination, frequency, selectedDay, selectedTime, type, id]
   );
 }
 
 // Delete a backup by ID
 async function deleteBackup(id) {
   await db.run(`DELETE FROM backups WHERE id = ?`, [id]);
-  deleteCronJob(id);
 }
 
 // Get the list of all backups

@@ -1,5 +1,5 @@
 # Build the frontend
-FROM node:lts
+FROM --platform=linux/amd64 node:lts
 
 # Back-end
 WORKDIR /app
