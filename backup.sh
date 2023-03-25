@@ -24,10 +24,10 @@ start_time=$(date +%s)
 if [ "$environment" = "development" ]; then
   case "$backup_type" in
     full)
-      find "$source" -type f >"$log_file" 2>&1
+      find "$source" -type f >>"$log_file" 2>&1
       ;;
     cumulative)
-      rsync -avz --delete --dry-run "$source/" "$destination/" >"$log_file" 2>&1
+      rsync -avz --delete --dry-run "$source/" "$destination/" >>"$log_file" 2>&1
       ;;
     *)
       echo "Invalid backup type: $backup_type" >&2
@@ -38,10 +38,10 @@ if [ "$environment" = "development" ]; then
 elif [ "$environment" = "production" ]; then
   case "$backup_type" in
     full)
-      tar -czvf "$destination/backup_${timestamp}.tar.gz" -C "$source" . >"$log_file" 2>&1
+      tar -czvf "$destination/backup_${timestamp}.tar.gz" -C "$source" . >>"$log_file" 2>&1
       ;;
     cumulative)
-      rsync -avz --delete "$source/" "$destination/" >"$log_file" 2>&1
+      rsync -avz --delete "$source/" "$destination/" >>"$log_file" 2>&1
       ;;
     *)
       echo "Invalid backup type: $backup_type" >&2
