@@ -219,7 +219,6 @@ export default {
     }
   },
   mounted() {
-    console.log('MODE: ',import.meta.env.MODE);
     this.fetchBackups();
     this.$refs.form.validate();
     this.socket = new WebSocket('ws://' + location.host + '/api/ws');

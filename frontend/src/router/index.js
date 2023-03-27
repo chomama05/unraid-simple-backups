@@ -4,6 +4,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
+    component: () => import('@/views/Backups.vue'),
+  },
+  {
+    path: '/configurator',
+    component: () => import('@/views/Configurator.vue'),
+  },
+  {
+    path: '/v1',
     component: () => import('@/layouts/default/Default.vue'),
     children: [
       {
