@@ -2,17 +2,21 @@ const { CronJob } = require('cron');
 const { exec } = require('child_process');
 const { Backup } = require('./models/Backup');
 const { getBackups } = require('./db');
+const { getCurrentTimestamp } = require('./helpers');
 
 const cronJobs = new Map();
 
-function generateCronPattern(frequency) {
+function generateCronPattern({frequency, selectedTime, selectedDay}) {
+  const [hour, minutes] = selectedTime.split(':');
+  // const weekDays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+
   switch (frequency) {
     case 'daily':
-      return '0 0 * * *';
+      return `0 ${minutes} ${hour} * * *`;
     case 'weekly':
-      return '0 0 * * 0';
+      return `0 ${minutes} ${hour} * * ${selectedDay}`;
     case 'monthly':
-      return '0 0 1 * *';
+      return `0	${minutes} ${hour} ${selectedDay} * *`;
     default:
       throw new Error('Invalid frequency');
   }
@@ -20,21 +24,24 @@ function generateCronPattern(frequency) {
 
 function executeBackup(backup) {
     const { id, source, destination, type } = backup;
-    const command = `./backup.sh ${id} "${source}" "${destination}" "${type}"`;
-  
+    const command = `./backup.sh ${id} "${source}" "${destination}" "${type}" "${process.env.NODE_ENV}"`;
+
+    console.log(`${getCurrentTimestamp()} - Executing Command:`);
+    console.log(command);
+
     exec(command, (error, stdout, stderr) => {
       if (error) {
-        console.error(`Error executing backup ${id}:`, error);
+        console.error(`${getCurrentTimestamp()} - Error executing backup id=${id}:`, error);
         return;
       }
-      console.log(`Backup ${id} executed successfully`);
+      console.log(`${getCurrentTimestamp()} - Backup id=${id} executed successfully`);
     });
 }
 
 function createCronJob(backup) {
-  const cronPattern = generateCronPattern(backup.frequency);
+  const cronPattern = generateCronPattern(backup);
   const cronJob = new CronJob(cronPattern, () => {
-    console.log(`Running backup ${backup.id}`);
+    console.log(`${getCurrentTimestamp()} - Running ${backup.type} backup with ID: ${backup.id}`);
     executeBackup(backup);
   });
 
@@ -64,13 +71,11 @@ async function loadCronJobsFromDatabase() {
     try {
       const backups = await getBackups();
       backups.forEach((backup) => createCronJob(backup));
-      console.log('Cron jobs loaded from the database');
+      console.log(`${getCurrentTimestamp()} - ${backups.length} Cron jobs loaded from the database`);
     } catch (error) {
-      console.error('Error loading cron jobs from the database:', error);
+      console.error(`${getCurrentTimestamp()} - Error loading cron jobs from the database:`, error);
     }
 }
-  
-// loadCronJobsFromDatabase();
 
 module.exports = {
   createCronJob,

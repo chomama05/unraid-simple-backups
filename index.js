@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
 const { Server: WebSocketServer } = require('ws');
-const { createCronJob, updateCronJob, loadCronJobsFromDatabase } = require('./cronManager');
+const { createCronJob, updateCronJob, deleteCronJob, loadCronJobsFromDatabase } = require('./cronManager');
 const {
   createBackupsTable,
   insertBackup,
@@ -36,6 +36,7 @@ app.put('/api/backups/:id', async (req, res) => {
 app.delete('/api/backups/:id', async (req, res) => {
   const { id } = req.params;
   await deleteBackup(parseInt(id));
+  deleteCronJob(id);
   res.sendStatus(204);
 });
 
