@@ -44,14 +44,14 @@ export default {
 				this.$emit('backupSelection', backup);
       },
 			getBackupIconColor(backup){
-        if(backup.lastBackupSuccess === undefined){
-          return '';
+        if(backup.lastBackupSuccess === 0){
+          return 'red';
         }
 
-        if(backup.lastBackupSuccess === true){
+        if(backup.lastBackupSuccess === 1){
           return 'green';
         }
-        return 'red';
+        return '';
       },
       getBackupIconName(backup){
         if(backup.lastBackupSuccess === undefined){
