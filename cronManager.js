@@ -37,7 +37,7 @@ function executeBackup(backup) {
         return;
       }
       await updateLastBackupSuccess(id, true);
-      console.log(`${getCurrentTimestamp()} - Backup id=${id} executed successfully`);
+      console.log(`${getCurrentTimestamp()} - Backup id (${id}) executed successfully`);
     });
 }
 
