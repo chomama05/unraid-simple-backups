@@ -9,46 +9,137 @@
 		<v-card-text>
 			<v-window v-model="tab">
 				<v-window-item value="one">
-					<v-container>
-						<v-row>
-							<v-col cols="12">
-								<h2>Backup: <span style="font-weight: 400;">{{ backup.name }}</span></h2>
-							</v-col>
-						</v-row>
-						<v-row>
-							<v-col cols="2"><v-btn class="ma-2" color="amber-lighten-2" icon="mdi-calendar-month"></v-btn></v-col>
-							<v-col cols="10"><v-text-field label="Type" :readonly="true" :model-value="backup.frequency"></v-text-field></v-col>
-						</v-row>
-						<v-row>
-							<v-col cols="2"><v-btn class="ma-2" color="teal-lighten-3" icon="mdi-timer-cog"></v-btn></v-col>
-							<v-col cols="10"><v-text-field label="Time" :readonly="true" :model-value="backup.selectedTime"></v-text-field></v-col>
-						</v-row>
-						<v-row v-if="backup.selectedDay">
-							<v-col cols="2"><v-btn class="ma-2" color="amber-lighten-1" icon="mdi-calendar-today"></v-btn></v-col>
-							<v-col cols="10"><v-text-field label="Day" :readonly="true" :model-value="getDay(backup)"></v-text-field></v-col>
-						</v-row>
-						<v-row>
-							<v-col cols="2"><v-btn class="ma-2" color="indigo" icon="mdi-map-marker"></v-btn></v-col>
-							<v-col cols="10"><v-text-field label="Source" :readonly="true" :model-value="backup.source"></v-text-field></v-col>
-						</v-row>
-						<v-row>
-							<v-col cols="2"><v-btn class="ma-2" color="teal" icon="mdi-map-marker-radius"></v-btn></v-col>
-							<v-col cols="10"><v-text-field label="Destination" :readonly="true" :model-value="backup.destination"></v-text-field></v-col>
-						</v-row>
-					</v-container>
-					<h3 class="text-capitalize">{{ backup.frequency }} {{ backup.type }} Backup</h3>
-          <p>{{ backup.source }}</p>
-          <p>{{ backup.destination }}</p>
-          <p>{{ backup.selectedTime }}</p>
-          <p>{{ backup.selectedDay }}</p>
+
+					<v-card class="flat-card">
+						<v-card-title>Backup: <span style="font-weight: 400;">{{ backup.name }}</span></v-card-title>
+
+						<v-divider></v-divider>
+
+						<v-container>
+							<v-row>
+								<v-col cols="12">
+									<v-text-field prepend-icon="mdi-tag" variant="outlined" label="Name" persistent-hint :readonly="true" :model-value="backup.name">
+										<template v-slot:append>
+											<v-tooltip location="bottom">
+												<template v-slot:activator="{ props }">
+													<v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+												</template>
+
+												The name of your Backup
+											</v-tooltip>
+										</template>
+									</v-text-field>
+								</v-col>
+							</v-row>
+							<v-row>
+								<v-col cols="12">
+									<v-text-field prepend-icon="mdi-content-save-all-outline" variant="outlined" persistent-hint label="Type" :readonly="true" :model-value="backup.type">
+										<template v-slot:append>
+											<v-tooltip location="bottom">
+												<template v-slot:activator="{ props }">
+													<v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+												</template>
+
+												The type of your Backup (full, cummulative). 'Cummulative' will only add/remove files that have changed in the source
+											</v-tooltip>
+										</template>
+									</v-text-field>
+								</v-col>
+							</v-row>
+							<v-row>
+								<v-col cols="12">
+									<v-text-field prepend-icon="mdi-calendar-month" variant="outlined" persistent-hint label="Frequency" :readonly="true" :model-value="backup.frequency">
+										<template v-slot:append>
+											<v-tooltip location="bottom">
+												<template v-slot:activator="{ props }">
+													<v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+												</template>
+
+												The frequency of your Backup (daily, weekly, monthly)
+											</v-tooltip>
+										</template>
+									</v-text-field>
+								</v-col>
+							</v-row>
+							<v-row>
+								<v-col cols="12">
+									<v-text-field prepend-icon="mdi-timer-cog" variant="outlined" persistent-hint label="Time" :readonly="true" :model-value="backup.selectedTime">
+										<template v-slot:append>
+											<v-tooltip location="bottom">
+												<template v-slot:activator="{ props }">
+													<v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+												</template>
+
+												The time the backup will run
+											</v-tooltip>
+										</template>
+									</v-text-field>
+								</v-col>
+							</v-row>
+							<v-row v-if="backup.selectedDay">
+								<v-col cols="12">
+									<v-text-field prepend-icon="mdi-calendar-today" variant="outlined" persistent-hint label="Day" :readonly="true" :model-value="getDay(backup)">
+										<template v-slot:append>
+											<v-tooltip location="bottom">
+												<template v-slot:activator="{ props }">
+													<v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+												</template>
+
+												The day the backup will run
+											</v-tooltip>
+										</template>
+									</v-text-field>
+								</v-col>
+							</v-row>
+							<v-row>
+								<v-col cols="12">
+									<v-text-field prepend-icon="mdi-folder-arrow-up" variant="outlined" persistent-hint label="Source" :readonly="true" :model-value="backup.source">
+										<template v-slot:append>
+											<v-tooltip location="bottom">
+												<template v-slot:activator="{ props }">
+													<v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+												</template>
+
+												The directory to be backed up
+											</v-tooltip>
+										</template>
+									</v-text-field>
+								</v-col>
+							</v-row>
+							<v-row>
+								<v-col cols="12">
+									<v-text-field prepend-icon="mdi-folder-arrow-down" variant="outlined" persistent-hint label="Destination" :readonly="true" :model-value="backup.destination">
+										<template v-slot:append>
+											<v-tooltip location="bottom">
+												<template v-slot:activator="{ props }">
+													<v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+												</template>
+
+												The directory where the backup will be stored
+											</v-tooltip>
+										</template>
+									</v-text-field>
+								</v-col>
+							</v-row>
+						</v-container>
+
+						<v-divider></v-divider>
+
+						<v-card-actions>
+							<v-btn rounded="0" color="black" prepend-icon="mdi-pencil" :to="`/configurator/${backup.id}`">Edit</v-btn>
+							<v-spacer></v-spacer>
+							<v-btn rounded="0" color="gray" prepend-icon="mdi-post-outline">See logs</v-btn>
+						</v-card-actions>
+
+					</v-card>
 				</v-window-item>
 
 				<v-window-item value="two">
-					Two
+					TODO
 				</v-window-item>
 
 				<v-window-item value="three">
-					Three
+					TODO
 				</v-window-item>
 			</v-window>
 		</v-card-text>
@@ -74,7 +165,21 @@ export default {
 				return days[backup.selectedDay-1];
 			}
 			return backup.selectedDay;
-		}
+		},
+		// TODO - Refactor to use store
+		//
+		// async deleteItem(item) {
+    //   this.loading = true;
+    //   try {
+    //     await axios.delete(`/api/backups/${item.id}`);
+    //     this.fetchBackups();
+    //   } catch (error) {
+    //     console.error('Error deleting backup configuration:', error);
+    //     this.showError(error);
+    //   } finally {
+    //     this.loading = false;
+    //   }
+    // },
 	}
 
 }

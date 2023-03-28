@@ -36,6 +36,30 @@ export const useBackupsStore = defineStore('backups', {
       }
     },
 
+    async getBackup(id){
+      this.loading = true;
+      try{
+        if(import.meta.env.MODE === 'development'){
+          return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                  this.loading = false;
+                  return resolve(devMockData[0]);
+              }, 1000) 
+          });   
+        }
+
+        const response = await axios.get(`/api/backups/${id}`);
+        return response.data;
+      }
+      catch(error) {
+        console.error(`Error fetching backup (${id}):`, error);
+        throw error;
+      }
+      finally{
+        this.loading = false;
+      }
+    },
+
     async createBackup(backup) {
       try {
         await axios.post('/api/backups', backup);

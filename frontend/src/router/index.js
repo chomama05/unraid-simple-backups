@@ -7,8 +7,12 @@ const routes = [
     component: () => import('@/views/Backups.vue'),
   },
   {
-    path: '/configurator',
+    path: '/configurator/:id?',
     component: () => import('@/views/Configurator.vue'),
+  },
+  {
+    path: '/logs',
+    component: () => import('@/views/Logs.vue'),
   },
   {
     path: '/v1',

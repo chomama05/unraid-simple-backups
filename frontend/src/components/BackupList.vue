@@ -10,7 +10,7 @@
 		<div v-if="!loading" v-for="(backup, index) in backups" :key="index">
 			<v-list-item @click="selectBackup(backup)"
 				:class="(selectedBackup && backup.id === selectedBackup.id) ? 'selected' : ''">
-				<v-list-item-title>{{ backup.id }}</v-list-item-title>
+				<v-list-item-title>{{ backup.name }}</v-list-item-title>
 				<v-list-item-subtitle class="text-capitalize">{{ backup.frequency }} {{ backup.type }}
 					Backup</v-list-item-subtitle>
 				<template v-slot:prepend>

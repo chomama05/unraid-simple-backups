@@ -7,6 +7,7 @@ const {
   insertBackup,
   updateBackup,
   getBackups,
+  getBackup,
   deleteBackup,
 } = require('./db');
 const { Backup } = require('./models/Backup');
@@ -43,6 +44,14 @@ app.delete('/api/backups/:id', async (req, res) => {
 app.get('/api/backups', async (req, res) => {
   const backups = await getBackups();
   res.json(backups);
+});
+
+app.get('/api/backups/:id', async (req, res) => {
+  if(!req.params.id || req.params.id === ''){
+    res.status(500).json({error: 400, message: 'Missing Backup ID'});
+  }
+  const backup = await getBackup(req.params.id);
+  res.json(backup);
 });
 
 // WebSocket handling

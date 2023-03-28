@@ -18,12 +18,14 @@ async function createBackupsTable() {
   await db.run(
     `CREATE TABLE IF NOT EXISTS backups (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT,
       source TEXT,
       destination TEXT,
       frequency TEXT,
       selectedDay TINYINT,
       selectedTime TEXT,
-      type TEXT
+      type TEXT,
+      lastBackupSuccess BOOLEAN
     )`
   );
 
@@ -67,6 +69,13 @@ async function updateBackup(backup) {
   );
 }
 
+async function updateLastBackupSuccess(id, success){
+  await db.run(
+    `UPDATE backups SET lastBackupSuccess = ? WHERE id = ?`,
+    [success, id]
+  )
+}
+
 // Delete a backup by ID
 async function deleteBackup(id) {
   await db.run(`DELETE FROM backups WHERE id = ?`, [id]);
@@ -77,11 +86,18 @@ async function getBackups() {
   return db.all(`SELECT * FROM backups`);
 }
 
+// Get specific backup by id
+async function getBackup(id) {
+  return db.get(`SELECT * FROM backups WHERE id = ?`, [id]);
+}
+
 module.exports = {
   initializeDatabase,
   createBackupsTable,
   insertBackup,
   updateBackup,
+  updateLastBackupSuccess,
   deleteBackup,
   getBackups,
+  getBackup
 };

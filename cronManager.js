@@ -2,7 +2,7 @@
 const cron = require('node-cron');
 const { exec } = require('child_process');
 const { Backup } = require('./models/Backup');
-const { getBackups } = require('./db');
+const { getBackups, updateLastBackupSuccess } = require('./db');
 const { getCurrentTimestamp } = require('./helpers');
 
 const cronJobs = new Map();
@@ -30,11 +30,13 @@ function executeBackup(backup) {
     console.log(`${getCurrentTimestamp()} - Executing Command:`);
     console.log(command);
 
-    exec(command, (error, stdout, stderr) => {
+    exec(command, async (error, stdout, stderr) => {
       if (error) {
         console.error(`${getCurrentTimestamp()} - Error executing backup id=${id}:`, error);
+        await updateLastBackupSuccess(id, false);
         return;
       }
+      await updateLastBackupSuccess(id, true);
       console.log(`${getCurrentTimestamp()} - Backup id=${id} executed successfully`);
     });
 }
