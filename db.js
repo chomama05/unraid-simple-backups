@@ -52,20 +52,20 @@ async function createBackupsTable() {
 
 // Insert a new backup
 async function insertBackup(backup) {
-  const { source, destination, frequency, selectedDay, selectedTime, type } = backup;
+  const { name, source, destination, frequency, selectedDay, selectedTime, type } = backup;
   const result = await db.run(
-    `INSERT INTO backups (source, destination, frequency, selectedDay, selectedTime, type) VALUES (?, ?, ?, ?, ?, ?)`,
-    [source, destination, frequency, selectedDay, selectedTime, type]
+    `INSERT INTO backups (name, source, destination, frequency, selectedDay, selectedTime, type) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [name, source, destination, frequency, selectedDay, selectedTime, type]
   );
   return { ...backup, id: result.lastID };
 }
 
 // Update an existing backup
 async function updateBackup(backup) {
-  const { id, source, destination, frequency, selectedDay, selectedTime, type } = backup;
+  const { id, name, source, destination, frequency, selectedDay, selectedTime, type } = backup;
   await db.run(
-    `UPDATE backups SET source = ?, destination = ?, frequency = ?, selectedDay = ?, selectedTime = ?, type = ? WHERE id = ?`,
-    [source, destination, frequency, selectedDay, selectedTime, type, id]
+    `UPDATE backups SET name = ?, source = ?, destination = ?, frequency = ?, selectedDay = ?, selectedTime = ?, type = ? WHERE id = ?`,
+    [name, source, destination, frequency, selectedDay, selectedTime, type, id]
   );
 }
 

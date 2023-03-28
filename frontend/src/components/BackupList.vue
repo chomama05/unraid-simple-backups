@@ -44,24 +44,24 @@ export default {
 				this.$emit('backupSelection', backup);
       },
 			getBackupIconColor(backup){
-        if(backup.lastBackupSuccess === undefined){
-          return '';
+        if(backup.lastBackupSuccess === 0){
+          return 'red';
         }
 
-        if(backup.lastBackupSuccess === true){
+        if(backup.lastBackupSuccess === 1){
           return 'green';
         }
-        return 'red';
+        return '';
       },
       getBackupIconName(backup){
-        if(backup.lastBackupSuccess === undefined){
-          return 'mdi-checkbox-blank-circle-outline';
+        if(backup.lastBackupSuccess === 0){
+          return 'mdi-alert-circle';
         }
-
-        if(backup.lastBackupSuccess === true){
+        
+        if(backup.lastBackupSuccess === 1){
           return 'mdi-check-circle';
         }
-        return 'mdi-alert-circle';
+        return 'mdi-checkbox-blank-circle-outline';
       }
 		},
 		async mounted() {
