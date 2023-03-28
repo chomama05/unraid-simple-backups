@@ -32,13 +32,26 @@
       ></v-select>
 
       <v-select
-        v-show="form.frequency !== 'daily'"
-        :items="form.frequency === 'weekly' ? dayOptions.slice(0, 7) : dayOptions"
+        v-show="form.frequency !== 'daily' && form.frequency === 'weekly'"
+        :disabled="this.form.frequency === 'daily' || this.form.frequency === 'monthly'"
+        :items="weekDays"
+        item-title="title"
+        item-value="value"
         v-model="form.selectedDay"
-        :label="form.frequency === 'weekly' ? 'Day of the week' : 'Day of the month'"
-        :disabled="this.form.frequency === 'daily'"
+        label="Day of the week"
         outlined
-        :rules="[form.frequency !== 'daily' ? requiredRule : null]"
+        :rules="[form.frequency === 'weekly' ? requiredRule : true]"
+        required
+      ></v-select>
+
+      <v-select
+        v-show="form.frequency !== 'daily' && form.frequency === 'monthly'"
+        :disabled="this.form.frequency === 'daily' || this.form.frequency === 'weekly'"
+        :items="dayOptions"
+        v-model="form.selectedDay"
+        label="Day of the month"
+        outlined
+        :rules="[form.frequency === 'monthly' ? requiredRule : true]"
         required
       ></v-select>
 
@@ -92,6 +105,7 @@ export default {
       snackbar: false,
       valid: true,
       time: { hours: 6, minutes: 30},
+      weekDays: [{title: 'Monday',value: 1},{title: 'Tuesday',value: 2},{title: 'Wednesday',value: 3},{title: 'Thursday',value: 4},{title: 'Friday',value: 5},{title: 'Saturday',value: 6},{title: 'Sunday',value: 7},],
       dayOptions: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],
       form: {
         source: '',
@@ -209,7 +223,7 @@ export default {
       }
     },
     formatTimeToHHmm(obj) {
-      const hours = obj.hours;
+      const hours = obj.hours === 0 ? '00' : obj.hours;
       const minutes = obj.minutes === 0 ? '00' : obj.minutes;
       return `${hours}:${minutes}`;
     },

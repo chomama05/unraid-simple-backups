@@ -1,4 +1,5 @@
-const { CronJob } = require('cron');
+// const { CronJob } = require('cron');
+const cron = require('node-cron');
 const { exec } = require('child_process');
 const { Backup } = require('./models/Backup');
 const { getBackups } = require('./db');
@@ -8,13 +9,13 @@ const cronJobs = new Map();
 
 function generateCronPattern({frequency, selectedTime, selectedDay}) {
   const [hour, minutes] = selectedTime.split(':');
-  // const weekDays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+  const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   switch (frequency) {
     case 'daily':
       return `0 ${minutes} ${hour} * * *`;
     case 'weekly':
-      return `0 ${minutes} ${hour} * * ${selectedDay}`;
+      return `0 ${minutes} ${hour} * * ${weekDays[selectedDay - 1]}`;
     case 'monthly':
       return `0	${minutes} ${hour} ${selectedDay} * *`;
     default:
@@ -40,13 +41,17 @@ function executeBackup(backup) {
 
 function createCronJob(backup) {
   const cronPattern = generateCronPattern(backup);
-  const cronJob = new CronJob(cronPattern, () => {
+  const cronJob = cron.schedule(cronPattern, () => {
     console.log(`${getCurrentTimestamp()} - Running ${backup.type} backup with ID: ${backup.id}`);
     executeBackup(backup);
   });
+  // const cronJob = new CronJob(cronPattern, () => {
+  //   console.log(`${getCurrentTimestamp()} - Running ${backup.type} backup with ID: ${backup.id}`);
+  //   executeBackup(backup);
+  // });
 
   cronJobs.set(backup.id, cronJob);
-  cronJob.start();
+  // cronJob.start();
 }
 
 function updateCronJob(backup) {
@@ -71,7 +76,7 @@ async function loadCronJobsFromDatabase() {
     try {
       const backups = await getBackups();
       backups.forEach((backup) => createCronJob(backup));
-      console.log(`${getCurrentTimestamp()} - ${backups.length} Cron jobs loaded from the database`);
+      console.log(`${getCurrentTimestamp()} - ${backups.length} Cron job${backups.length > 1 ? 's' : ''} loaded from the database`);
     } catch (error) {
       console.error(`${getCurrentTimestamp()} - Error loading cron jobs from the database:`, error);
     }
