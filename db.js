@@ -64,7 +64,7 @@ async function insertBackup(backup) {
 async function updateBackup(backup) {
   const { id, name, source, destination, frequency, selectedDay, selectedTime, type } = backup;
   await db.run(
-    `UPDATE backups SET name = ? source = ?, destination = ?, frequency = ?, selectedDay = ?, selectedTime = ?, type = ? WHERE id = ?`,
+    `UPDATE backups SET name = ?, source = ?, destination = ?, frequency = ?, selectedDay = ?, selectedTime = ?, type = ? WHERE id = ?`,
     [name, source, destination, frequency, selectedDay, selectedTime, type, id]
   );
 }
