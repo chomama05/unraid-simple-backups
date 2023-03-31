@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 
 const devMockData = [
-  {id: 1, name: 'Cummulative Backup of Secondary AppData', source: '/mnt/user/rapid_appdata', destination: '/mnt/user/Backup/rapid_appdata', frequency: 'daily', selectedTime: "23:00", type: 'cummulative', lastBackupSuccess: 1},
+  {id: 1, name: 'Cummulative Backup of Secondary AppData', source: '/mnt/user/rapid_appdata', destination: '/mnt/user/Backup/rapid_appdata', frequency: 'daily', selectedTime: "23:04", type: 'cummulative', lastBackupSuccess: 1},
   {id: 2, name: 'My full backup for important files', source: '/mnt/user/nextcloud', destination: '/mnt/user/Backup/nextcloud_files', frequency: 'weekly', selectedTime: "22:00", selectedDay: 5, type: 'full', lastBackupSuccess: 0},
   {id: 3, name: 'WIP need to configure...', source: '/mnt/user', destination: '/mnt/user/Backup', frequency: 'monthly', selectedTime: "23:30", selectedDay: 24, type: 'full'},
 ]

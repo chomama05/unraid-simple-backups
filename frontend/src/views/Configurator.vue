@@ -4,11 +4,6 @@
 
         <backup-configurator />
 
-        <!-- <v-list>
-          <v-list-item v-for="(backup, index) in backups" :key="index" @click="selectBackup(backup)">
-            <v-list-item-title>{{ backup.name }}</v-list-item-title>
-          </v-list-item>
-        </v-list> -->
       </template>
     </Layout>
   </template>

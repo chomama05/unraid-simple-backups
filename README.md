@@ -1,4 +1,10 @@
 # unraid-simple-backups
 A Simple Backup solution for Unraid 
 
-TODO Documentation
+Documentation Here...
+
+TODO:
+- Cleanup
+    Cleanup by Number of Backups
+    Cleanup by Days
+

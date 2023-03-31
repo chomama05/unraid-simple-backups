@@ -1,7 +1,9 @@
+const path = require('path');
 const express = require('express');
 const http = require('http');
 const { Server: WebSocketServer } = require('ws');
 const { createCronJob, updateCronJob, deleteCronJob, loadCronJobsFromDatabase } = require('./cronManager');
+const { searchDirectories } = require('./helpers');
 const {
   createBackupsTable,
   insertBackup,
@@ -19,7 +21,25 @@ const wss = new WebSocketServer({ server });
 app.use(express.json());
 app.use(express.static('frontend/dist'));
 
-// Express routes
+// CatchAll for Front-end
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
+});
+
+// API routes
+app.get('/api/backups', async (req, res) => {
+  const backups = await getBackups();
+  res.json(backups);
+});
+
+app.get('/api/backups/:id', async (req, res) => {
+  if(!req.params.id || req.params.id === ''){
+    res.status(500).json({error: 400, message: 'Missing Backup ID'});
+  }
+  const backup = await getBackup(req.params.id);
+  res.json(backup);
+});
+
 app.post('/api/backups', async (req, res) => {
   const backup = new Backup(req.body);
   const result = await insertBackup(backup);
@@ -41,17 +61,10 @@ app.delete('/api/backups/:id', async (req, res) => {
   res.sendStatus(204);
 });
 
-app.get('/api/backups', async (req, res) => {
-  const backups = await getBackups();
-  res.json(backups);
-});
-
-app.get('/api/backups/:id', async (req, res) => {
-  if(!req.params.id || req.params.id === ''){
-    res.status(500).json({error: 400, message: 'Missing Backup ID'});
-  }
-  const backup = await getBackup(req.params.id);
-  res.json(backup);
+app.get('/api/directories', async (req, res) => {
+  const search = req.query.search || '';
+  const directories = await searchDirectories(search);
+  res.json(directories);
 });
 
 // WebSocket handling

@@ -138,7 +138,10 @@
 
           <v-row>
             <v-col cols="12">
-              <v-text-field :loading="loading" prepend-icon="mdi-folder-arrow-up" variant="outlined" label="Source"
+              <directory-input
+              
+              ></directory-input>
+              <!-- <v-text-field :loading="loading" prepend-icon="mdi-folder-arrow-up" variant="outlined" label="Source"
                 v-model="form.source">
                 <template v-slot:append>
                   <v-tooltip location="bottom">
@@ -149,7 +152,7 @@
                     The directory to be backed up
                   </v-tooltip>
                 </template>
-              </v-text-field>
+              </v-text-field> -->
             </v-col>
           </v-row>
 
@@ -187,11 +190,15 @@
 <script>
 import axios from 'axios';
 import { useBackupsStore } from '@/store/backups';
+import DirectoryInput from './DirectoryInput.vue';
 
 const store = useBackupsStore();
 
 export default {
   name: 'BackupConfigurator',
+  components: {
+    DirectoryInput
+  },
   computed:{
     backupId(){
       return this.$route.params.id || null;
@@ -320,6 +327,7 @@ export default {
   },
   watch: {
     time(newValue) {
+      console.log('time', newValue);
       this.form.selectedTime = this.formatTimeToHHmm(newValue);
     }
   },
