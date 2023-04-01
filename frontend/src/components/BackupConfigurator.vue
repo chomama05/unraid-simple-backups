@@ -122,54 +122,30 @@
                   </v-tooltip>
                 </template>
               </v-input>
-              <!-- <v-text-field prepend-icon="mdi-tag" variant="outlined" label="Name" :model-value="form.name">
-                  <template v-slot:append>
-                    <v-tooltip location="bottom">
-                      <template v-slot:activator="{ props }">
-                        <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
-                      </template>
-
-                      The name of your Backup
-                    </v-tooltip>
-                  </template>
-                </v-text-field> -->
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
               <directory-input
-              
+                v-model="form.source"
+                label="Source"
+                variant="outlined"
+                leftIcon="mdi-folder-arrow-up"
+                tooltipMessage="The directory to be backed up"
               ></directory-input>
-              <!-- <v-text-field :loading="loading" prepend-icon="mdi-folder-arrow-up" variant="outlined" label="Source"
-                v-model="form.source">
-                <template v-slot:append>
-                  <v-tooltip location="bottom">
-                    <template v-slot:activator="{ props }">
-                      <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
-                    </template>
-
-                    The directory to be backed up
-                  </v-tooltip>
-                </template>
-              </v-text-field> -->
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
-              <v-text-field :loading="loading" prepend-icon="mdi-folder-arrow-down" variant="outlined" label="Destination"
-                v-model="form.destination">
-                <template v-slot:append>
-                  <v-tooltip location="bottom">
-                    <template v-slot:activator="{ props }">
-                      <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
-                    </template>
-
-                    The directory where the backup will be stored
-                  </v-tooltip>
-                </template>
-              </v-text-field>
+              <directory-input
+                v-model="form.destination"
+                label="Destination"
+                variant="outlined"
+                leftIcon="mdi-folder-arrow-down"
+                tooltipMessage="The directory where the backup will be stored"
+              ></directory-input>
             </v-col>
           </v-row>
         </v-container>

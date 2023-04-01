@@ -1,66 +1,82 @@
 <template>
   <v-autocomplete
     clearable
+    persistent-hint
+    class="v-input v-input--horizontal v-input--density-default v-input--dirty v-input--readonly v-text-field v-select v-select--single v-select--selected"
+    :variant="variant"
     v-model="select"
     v-model:search="search"
     :loading="loading"
     :items="directories"
-    class="mx-4"
     density="comfortable"
     hide-no-data
     hide-details
-    :label="select"
-  ></v-autocomplete>
+    :label="label"
+    :prepend-icon="leftIcon"
+    @click:append="console.log('clicked!')"
+  >
+  <template v-slot:append>
+    <v-tooltip location="bottom">
+      <template v-slot:activator="{ props }">
+        <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+      </template>
+
+      {{ tooltipMessage }}
+    </v-tooltip>
+  </template>
+  </v-autocomplete>
 </template>
 
 <script>
 import axios from 'axios';
 
 export default {
+  props: {
+    modelValue: 'String',
+    label: 'String',
+    variant: 'String',
+    leftIcon: 'String',
+    tooltipMessage: 'String'
+  },
+  emits: ['update:modelValue'],
+  computed: {
+    select: {
+      get() {
+        return this.modelValue === '' ? '/mnt/' : this.modelValue;
+      },
+      set(value) {
+        this.$emit('update:modelValue', value);
+        console.log('emitted');
+      }
+    }
+  },
   data() {
     return {
       loading: false,
-      select: '/mnt/',
       search: '',
       directories: [],
     };
   },
   watch: {
-		// search (val) {
-    //   val && val !== this.select && this.querySelections(val)
-    // },
     select (val) {
       this.fetchDirectories(val);
     }
 	},
   methods: {
-    // async querySelections (v) {
-    //   this.loading = true
-    //   try {
-		// 		if(v !== ''){
-		// 			const response = await axios.get('/api/directories', { params: { search: v } });
-    //     	this.directories = response.data.map(dir => {
-    //         return dir.value;
-    //       });
-		// 		}
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-    //   finally{
-    //     this.loading = false
-    //   }
-    //   // setTimeout(() => {
-    //   //   this.items = this.states.filter(e => {
-    //   //     return (e || '').toLowerCase().indexOf((v || '').toLowerCase()) > -1
-    //   //   })
-    //   //   this.loading = false
-    //   // }, 500)
-    // },
     async fetchDirectories(searchVal) {
+			console.log('directories: ', this.directories);
 			console.log('search: ', searchVal);
+			console.log('select: ', this.select);
       try {
 				if(searchVal !== ''){
-					const response = await axios.get('/api/directories', { params: { search: searchVal } });
+          let response = {};
+          if(import.meta.env.MODE === 'development'){
+            response.data = JSON.parse('[{"value":"/mnt/addons","text":"addons"},{"value":"/mnt/cache","text":"cache"},{"value":"/mnt/disk1","text":"disk1"},{"value":"/mnt/disks","text":"disks"},{"value":"/mnt/rapidapps","text":"rapidapps"},{"value":"/mnt/remotes","text":"remotes"},{"value":"/mnt/rootshare","text":"rootshare"},{"value":"/mnt/user","text":"user"},{"value":"/mnt/user0","text":"user0"}]');
+          }
+          else{
+            response = await axios.get('/api/directories', { params: { search: searchVal } });
+          }
+					console.log('response: ', response);
         	this.directories = response.data.map(dir => {
             return dir.value;
           });
@@ -71,13 +87,8 @@ export default {
     },
   },
   mounted() {
+    console.log('label: ', this.label);
     this.fetchDirectories('/mnt/');
   }
 };
-/*
-label="Directory"
-    :items="directories"
-		v-model="search"
-    @update:search="fetchDirectories($event)"
-*/
 </script>
