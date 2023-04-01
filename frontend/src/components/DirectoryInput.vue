@@ -1,8 +1,6 @@
 <template>
   <v-autocomplete
     clearable
-    persistent-hint
-    class="v-input v-input--horizontal v-input--density-default v-input--dirty v-input--readonly v-text-field v-select v-select--single v-select--selected"
     :variant="variant"
     v-model="select"
     v-model:search="search"
@@ -13,7 +11,7 @@
     hide-details
     :label="label"
     :prepend-icon="leftIcon"
-    @click:append="console.log('clicked!')"
+    @input="onInput()"
   >
   <template v-slot:append>
     <v-tooltip location="bottom">
@@ -60,9 +58,13 @@ export default {
   watch: {
     select (val) {
       this.fetchDirectories(val);
-    }
+    },
 	},
   methods: {
+    onInput(value) {
+      console.log('onInput!');
+      this.fetchDirectories(this.search);
+    },
     async fetchDirectories(searchVal) {
 			console.log('directories: ', this.directories);
 			console.log('search: ', searchVal);
@@ -77,9 +79,11 @@ export default {
             response = await axios.get('/api/directories', { params: { search: searchVal } });
           }
 					console.log('response: ', response);
-        	this.directories = response.data.map(dir => {
-            return dir.value;
-          });
+          if(response.data && response.data.length > 0){
+            this.directories = response.data.map(dir => {
+              return dir.value;
+            });
+          }
 				}
       } catch (error) {
         console.error(error);
