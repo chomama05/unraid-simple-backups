@@ -14,6 +14,9 @@ exports.searchDirectories = async (search) => {
 
 		return directories;
 	} catch (error) {
+		if(error.code === 'ENOENT'){
+			return [];
+		}
 		console.error(error);
 		throw new Error('Failed to read directory');
 	}
