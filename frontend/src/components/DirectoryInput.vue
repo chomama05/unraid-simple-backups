@@ -67,7 +67,7 @@ export default {
     },
   },
   mounted() {
-    // this.fetchDirectories()
+    this.fetchDirectories('/mnt/');
   }
 };
 /*
