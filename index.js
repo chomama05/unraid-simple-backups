@@ -21,8 +21,8 @@ const wss = new WebSocketServer({ server });
 app.use(express.json());
 app.use(express.static('frontend/dist'));
 
-// CatchAll for Front-end
-app.get('*', (req, res) => {
+// CatchAll for Front-end (non-api routes)
+app.get(/^(?!\/api).*$/, (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
 });
 
