@@ -34,34 +34,36 @@ export default {
     }
 	},
   methods: {
-    async querySelections (v) {
-      this.loading = true
-      try {
-				if(v !== ''){
-					const response = await axios.get('/api/directories', { params: { search: v } });
-        	this.directories = response.data.map(dir => {
-            return dir.value;
-          });
-				}
-      } catch (error) {
-        console.error(error);
-      }
-      finally{
-        this.loading = false
-      }
-      // setTimeout(() => {
-      //   this.items = this.states.filter(e => {
-      //     return (e || '').toLowerCase().indexOf((v || '').toLowerCase()) > -1
-      //   })
-      //   this.loading = false
-      // }, 500)
-    },
+    // async querySelections (v) {
+    //   this.loading = true
+    //   try {
+		// 		if(v !== ''){
+		// 			const response = await axios.get('/api/directories', { params: { search: v } });
+    //     	this.directories = response.data.map(dir => {
+    //         return dir.value;
+    //       });
+		// 		}
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    //   finally{
+    //     this.loading = false
+    //   }
+    //   // setTimeout(() => {
+    //   //   this.items = this.states.filter(e => {
+    //   //     return (e || '').toLowerCase().indexOf((v || '').toLowerCase()) > -1
+    //   //   })
+    //   //   this.loading = false
+    //   // }, 500)
+    // },
     async fetchDirectories(searchVal) {
 			console.log('search: ', searchVal);
       try {
 				if(searchVal !== ''){
 					const response = await axios.get('/api/directories', { params: { search: searchVal } });
-        	this.directories = response.data;
+        	this.directories = response.data.map(dir => {
+            return dir.value;
+          });
 				}
       } catch (error) {
         console.error(error);
