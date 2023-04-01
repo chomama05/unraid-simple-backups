@@ -39,7 +39,9 @@ export default {
       try {
 				if(v !== ''){
 					const response = await axios.get('/api/directories', { params: { search: v } });
-        	this.directories = response.data;
+        	this.directories = response.data.map(dir => {
+            return dir.value;
+          });
 				}
       } catch (error) {
         console.error(error);

@@ -10,7 +10,7 @@ exports.searchDirectories = async (search) => {
 
 		const directories = files
 			.filter(file => file.isDirectory())
-			.map(file => ({ value: path.join(search, file.name), text: file.name }));
+			.map(file => ({ value: path.join(fullPath, file.name), text: file.name }));
 
 		return directories;
 	} catch (error) {
