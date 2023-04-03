@@ -63,7 +63,7 @@ export default {
 		modelValue: 'Boolean',
 		rootDir: 'String'
 	},
-	emits: ['update:modelValue'],
+	emits: ['update:modelValue', 'close'],
 	computed: {
 		dialog: {
 			get() {
@@ -100,6 +100,7 @@ export default {
 				fullPath += `/${name}`;
 			}
 			this.$emit('close', fullPath);
+			this.newDirName = '';
 			this.dialog = false;
 		},
 		async createNewDirectory() {

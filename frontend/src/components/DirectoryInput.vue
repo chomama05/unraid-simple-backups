@@ -82,7 +82,6 @@ export default {
 	},
   methods: {
     onInput(value) {
-      console.log('onInput!');
       this.fetchDirectories(this.search);
     },
     dialogClose(dir){
@@ -90,9 +89,6 @@ export default {
       this.select = dir;
     },
     async fetchDirectories(searchVal) {
-			console.log('directories: ', this.directories);
-			console.log('search: ', searchVal);
-			console.log('select: ', this.select);
       try {
 				if(searchVal !== ''){
           let response = {};
@@ -117,7 +113,7 @@ export default {
     },
   },
   mounted() {
-    this.fetchDirectories('/mnt');
+    this.fetchDirectories(this.select);
   }
 };
 </script>
