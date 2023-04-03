@@ -1,8 +1,8 @@
 # Build the frontend
 FROM --platform=linux/amd64 node:lts
 
-# Update package lists and install rsync
-# RUN apt-get update && apt-get install -y rsync
+# Update package lists and install rsync rsync
+RUN apt-get update && apt-get install -y bc
 
 # Back-end
 WORKDIR /app
