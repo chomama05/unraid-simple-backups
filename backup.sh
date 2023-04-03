@@ -35,7 +35,7 @@ if [ "$environment" = "development" ]; then
     *)
       echo "Invalid backup type: $backup_type" >&2
      	echo "Valid backup types are 'full' and 'cumulative'" >&2
-  		exit 1
+  		highest_exit_code=1
   		;;
 		esac
 elif [ "$environment" = "production" ]; then
@@ -51,13 +51,13 @@ elif [ "$environment" = "production" ]; then
 		*)
 			echo "Invalid backup type: $backup_type" >&2
 			echo "Valid backup types are 'full' and 'cumulative'" >&2
-			exit 1
+			highest_exit_code=1
 		;;
 	esac
 else
 	echo "Invalid environment: $environment" >&2
 	echo "Valid environments are 'development' and 'production'" >&2
-	exit 1
+	highest_exit_code=1
 fi
 
 if [ $exit_code -gt $highest_exit_code ]; then

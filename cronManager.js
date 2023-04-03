@@ -1,13 +1,13 @@
 // const { CronJob } = require('cron');
 const cron = require('node-cron');
-const { exec } = require('child_process');
+const { spawn } = require("child_process");
 const { Backup } = require('./models/Backup');
 const { getBackups, updateLastBackupSuccess } = require('./db');
 const { getCurrentTimestamp } = require('./helpers');
 
 const cronJobs = new Map();
 
-function generateCronPattern({frequency, selectedTime, selectedDay}) {
+function generateCronPattern({ frequency, selectedTime, selectedDay }) {
   const [hour, minutes] = selectedTime.split(':');
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -23,22 +23,37 @@ function generateCronPattern({frequency, selectedTime, selectedDay}) {
   }
 }
 
-function executeBackup(backup) {
-    const { id, source, destination, type } = backup;
-    const command = `./backup.sh ${id} "${source}" "${destination}" "${type}" "${process.env.NODE_ENV}"`;
+async function executeBackup(backup) {
+  const { id, source, destination, type } = backup;
+  const args = [id, source, destination, type, process.env.NODE_ENV];
+  const command = "./backup.sh";
 
-    console.log(`${getCurrentTimestamp()} - Executing Command:`);
-    console.log(command);
+  console.log(`${getCurrentTimestamp()} - Executing Command:`);
+  console.log(`${command} ${args.join(" ")}`);
 
-    exec(command, async (error, stdout, stderr) => {
-      if (error) {
-        console.error(`${getCurrentTimestamp()} - Error executing backup id=${id}:`, error);
-        await updateLastBackupSuccess(id, false);
-        return;
-      }
+  await updateLastBackupSuccess(id, false);
+  const backupProcess = spawn(command, args);
+
+  backupProcess.stdout.on("data", (data) => {
+    console.log(`${getCurrentTimestamp()} - stdout: ${data}`);
+  });
+
+  backupProcess.stderr.on("data", (data) => {
+    console.error(`${getCurrentTimestamp()} - stderr: ${data}`);
+  });
+
+  backupProcess.on("error", async (error) => {
+    console.error(`${getCurrentTimestamp()} - Error executing backup id=${id}:`, error);
+  });
+
+  backupProcess.on("close", async (code) => {
+    if (code === 0) {
       await updateLastBackupSuccess(id, true);
       console.log(`${getCurrentTimestamp()} - Backup id (${id}) executed successfully`);
-    });
+    } else {
+      console.error(`${getCurrentTimestamp()} - Backup id (${id}) failed with exit code ${code}`);
+    }
+  });
 }
 
 function createCronJob(backup) {
@@ -70,13 +85,13 @@ function deleteCronJob(backupId) {
 }
 
 async function loadCronJobsFromDatabase() {
-    try {
-      const backups = await getBackups();
-      backups.forEach((backup) => createCronJob(backup));
-      console.log(`${getCurrentTimestamp()} - ${backups.length} Cron job${backups.length > 1 ? 's' : ''} loaded from the database`);
-    } catch (error) {
-      console.error(`${getCurrentTimestamp()} - Error loading cron jobs from the database:`, error);
-    }
+  try {
+    const backups = await getBackups();
+    backups.forEach((backup) => createCronJob(backup));
+    console.log(`${getCurrentTimestamp()} - ${backups.length} Cron job${backups.length > 1 ? 's' : ''} loaded from the database`);
+  } catch (error) {
+    console.error(`${getCurrentTimestamp()} - Error loading cron jobs from the database:`, error);
+  }
 }
 
 module.exports = {
