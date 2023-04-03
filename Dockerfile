@@ -2,7 +2,7 @@
 FROM --platform=linux/amd64 node:lts
 
 # Update package lists and install rsync rsync
-RUN apt-get update && apt-get install -y bc
+RUN apt-get update && apt-get install -y bc rsync
 
 # Back-end
 WORKDIR /app

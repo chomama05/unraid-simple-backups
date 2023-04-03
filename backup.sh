@@ -11,7 +11,7 @@ if [ "$#" -ne 5 ]; then
   exit 1
 fi
 
-timestamp="$(date +%Y-%m-%d_%H:%M:%S)"
+timestamp="$(date +%Y-%m-%d_%H.%M.%S)"
 log_dir="/data/logs/$backup_id"
 log_file="$log_dir/${backup_type}_backup_id-${backup_id}_${timestamp}.log"
 
