@@ -39,6 +39,7 @@ if [ "$environment" = "development" ]; then
   		;;
 		esac
 elif [ "$environment" = "production" ]; then
+	mkdir -p "$(dirname "$destination")"
 	case "$backup_type" in
 		full)
 			tar -czvf "$destination/backup_${timestamp}.tar.gz" -C "$source" . >>"$log_file" 2>&1
