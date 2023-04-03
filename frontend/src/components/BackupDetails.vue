@@ -11,10 +11,11 @@
 				<v-window-item value="one">
 					<v-card>
 						<v-card-title>Backup: <span style="font-weight: 400;">{{ backup.name }}</span></v-card-title>
-						
+
 						<v-divider></v-divider>
 						<v-container>
-							<delete-backup-dialog v-model="showDeleteDialog" :backup="backup" @close="deleteBackupDialogClosed($event)"></delete-backup-dialog>
+							<delete-backup-dialog v-model="showDeleteDialog" :backup="backup"
+								@close="deleteBackupDialogClosed($event)"></delete-backup-dialog>
 							<v-row>
 								<v-col cols="12">
 									<v-text-field prepend-icon="mdi-tag" variant="outlined" label="Name" persistent-hint :readonly="true"
@@ -161,7 +162,7 @@ export default {
 	props: {
 		backup: Object
 	},
-	emits: ['update:modelValue'],
+	emits: ['update:modelValue', 'backupDeleted'],
 	components: {
 		deleteBackupDialog
 	},
@@ -179,26 +180,15 @@ export default {
 			}
 			return backup.selectedDay;
 		},
-		openDeleteBackupDialog(){
+		openDeleteBackupDialog() {
 			this.showDeleteDialog = true;
 		},
-		deleteBackupDialogClosed(event){
-			console.log(event);
+		deleteBackupDialogClosed(deleted) {
+			console.log('deleteBackupDialogClosed: ', deleted);
+			if (deleted === true) {
+				this.$emit('backupDeleted');
+			}
 		}
-		// TODO - Refactor to use store
-		//
-		// async deleteItem(item) {
-		//   this.loading = true;
-		//   try {
-		//     await axios.delete(`/api/backups/${item.id}`);
-		//     this.fetchBackups();
-		//   } catch (error) {
-		//     console.error('Error deleting backup configuration:', error);
-		//     this.showError(error);
-		//   } finally {
-		//     this.loading = false;
-		//   }
-		// },
 	}
 
 }
@@ -217,4 +207,5 @@ export default {
 .tabs .v-tab:not(.v-tab--active) {
 	color: rgba(255, 255, 255, 0.7);
 	/* Adjust the color and opacity as needed */
-}</style>
+}
+</style>

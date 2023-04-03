@@ -17,17 +17,17 @@ export const useBackupsStore = defineStore('backups', {
       this.loading = true;
       try {
         if(import.meta.env.MODE === 'development'){
-            return new Promise((resolve, reject) => {
+            await new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.backups = devMockData;
-                    this.loading = false;
                     return resolve();
                 }, 1000) 
             });   
         }
-
-        const response = await axios.get('/api/backups');
-        this.backups = response.data;
+        else{
+          const response = await axios.get('/api/backups');
+          this.backups = response.data;
+        }
       } catch (error) {
         console.error('Error fetching backups:', error);
         throw error;
@@ -81,6 +81,11 @@ export const useBackupsStore = defineStore('backups', {
     },
 
     async deleteBackup(id) {
+      // return new Promise((resolve, reject) => {
+      //   setTimeout(() => {
+      //     return resolve();
+      //   }, 5000)
+      // })
       try {
         await axios.delete(`/api/backups/${id}`);
         await this.fetchBackups();

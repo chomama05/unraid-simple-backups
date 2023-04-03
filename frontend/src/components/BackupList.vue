@@ -31,10 +31,12 @@ export default {
       backups() {
         return store.backups;
       },
+      loading(){
+        return store.loading;
+      }
     },
 		data() {
       return {
-        loading: false,
 				selectedBackup: null,
       }
     },
@@ -65,9 +67,7 @@ export default {
       }
 		},
 		async mounted() {
-      this.loading = true;
       await store.fetchBackups();
-      this.loading = false;
     }
 }
 
