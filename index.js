@@ -3,7 +3,7 @@ const express = require('express');
 const http = require('http');
 const { Server: WebSocketServer } = require('ws');
 const { createCronJob, updateCronJob, deleteCronJob, loadCronJobsFromDatabase } = require('./cronManager');
-const { searchDirectories } = require('./helpers');
+const { searchDirectories, createNewDirectory } = require('./helpers');
 const {
   createBackupsTable,
   insertBackup,
