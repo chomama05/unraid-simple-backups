@@ -67,6 +67,23 @@ app.get('/api/directories', async (req, res) => {
   res.json(directories);
 });
 
+app.post('/api/directory', async (req, res) => {
+  const { directory, name } = req.body;
+
+  if (typeof directory !== 'string' || typeof name !== 'string') {
+    res.status(400).json({ message: 'Both directory and name parameters must be strings.' });
+    return;
+  }
+
+  try{
+    const newDirectoryPath = await createNewDirectory(directory, name);
+    res.status(201).json({ message: 'New directory created.', path: newDirectoryPath });
+  }
+  catch(error){
+    res.status(500).json({ message: 'Failed to create new directory.', error: error.message });
+  }
+});
+
 // WebSocket handling
 wss.on('connection', (ws) => {
     ws.on('message', async (message) => {

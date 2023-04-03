@@ -22,6 +22,17 @@ exports.searchDirectories = async (search) => {
 	}
 };
 
+exports.createNewDirectory = async (directory, name) => {
+	const newDirectoryPath = path.join(directory, name);
+  
+	try {
+	  await fs.mkdir(newDirectoryPath, { recursive: true });
+	  return newDirectoryPath;
+	} catch (error) {
+	  throw error;
+	}
+  }
+
 exports.getCurrentTimestamp = () => {
 	const now = new Date();
 	const year = now.getFullYear();

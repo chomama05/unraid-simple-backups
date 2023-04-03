@@ -1,6 +1,8 @@
 <template>
+  <create-new-directory-dialog v-model="showNewDirDialog" :rootDir="newDirRoot" @close="dialogClose($event)"></create-new-directory-dialog>
   <v-autocomplete
     clearable
+    class="py-5"
     :variant="variant"
     v-model="select"
     v-model:search="search"
@@ -13,6 +15,14 @@
     :prepend-icon="leftIcon"
     @input="onInput()"
   >
+  <template v-slot:item="{ props, item }">
+    <v-list-item
+      v-bind="props"
+      :prepend-icon="item.value === 'Create New Directory' ? 'mdi-folder-plus-outline' : 'mdi-folder'"
+      :title="item.value"
+    ></v-list-item>
+  </template>
+
   <template v-slot:append>
     <v-tooltip location="bottom">
       <template v-slot:activator="{ props }">
@@ -27,6 +37,7 @@
 
 <script>
 import axios from 'axios';
+import createNewDirectoryDialog from './CreateDirectoryDialog.vue';
 
 export default {
   props: {
@@ -37,14 +48,16 @@ export default {
     tooltipMessage: 'String'
   },
   emits: ['update:modelValue'],
+  components:{
+    createNewDirectoryDialog
+  },
   computed: {
     select: {
       get() {
-        return this.modelValue === '' ? '/mnt/' : this.modelValue;
+        return this.modelValue === '' ? '/mnt' : this.modelValue;
       },
       set(value) {
         this.$emit('update:modelValue', value);
-        console.log('emitted');
       }
     }
   },
@@ -53,17 +66,28 @@ export default {
       loading: false,
       search: '',
       directories: [],
+      newDirRoot: '/mnt',
+      showNewDirDialog: false
     };
   },
   watch: {
     select (val) {
-      this.fetchDirectories(val);
+      if(val === 'Create New Directory'){
+        console.log('Create new dir...');
+        this.showNewDirDialog = true;
+        return;
+      }
+      return this.fetchDirectories(val);
     },
 	},
   methods: {
     onInput(value) {
       console.log('onInput!');
       this.fetchDirectories(this.search);
+    },
+    dialogClose(dir){
+      console.log('dir: ', dir);
+      this.select = dir;
     },
     async fetchDirectories(searchVal) {
 			console.log('directories: ', this.directories);
@@ -83,6 +107,8 @@ export default {
             this.directories = response.data.map(dir => {
               return dir.value;
             });
+            this.newDirRoot = searchVal;
+            this.directories.push('Create New Directory')
           }
 				}
       } catch (error) {
@@ -91,8 +117,7 @@ export default {
     },
   },
   mounted() {
-    console.log('label: ', this.label);
-    this.fetchDirectories('/mnt/');
+    this.fetchDirectories('/mnt');
   }
 };
 </script>
