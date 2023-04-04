@@ -1,8 +1,11 @@
 # Build the frontend
 FROM --platform=linux/amd64 node:lts
 
-# Update package lists and install rsync rsync
-RUN apt-get update && apt-get install -y bc rsync
+# Install required utilities
+RUN apt-get update && \
+    apt-get install -y tar rsync cron sqlite3 nano bc && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Back-end
 WORKDIR /app
