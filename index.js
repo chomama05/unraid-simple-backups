@@ -98,11 +98,12 @@ app.get('/api/logs', async (req, res) => {
   }
 });
 
-app.get('/api/log/:logFileLocation', async (req, res) => {
+app.get('/api/log/:backupId/:logFileLocation', async (req, res) => {
   try {
+    const backupId = req.params.backupId;
     const logFileLocation = req.params.logFileLocation;
     const buffer = Buffer.from(logFileLocation, 'base64');
-    const logData = await getLogData(buffer.toString());
+    const logData = await getLogData(backupId, buffer.toString());
     res.type('text/plain').send(logData);
   } catch (error) {
     console.error(error);
