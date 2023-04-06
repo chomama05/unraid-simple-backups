@@ -57,11 +57,8 @@ async function getLogs() {
 
 async function getLogData(backupId, logFileLocation) {
 	try {
-		console.log('backupId, logFileLocation', backupId, logFileLocation);
 		const logFilePath = path.join(logsDirectory, backupId, logFileLocation);
-		console.log('logFilePath', logFilePath);
 		const logData = await fs.readFile(logFilePath, 'utf8');
-		console.log('logData', logData);
 		return logData;
 	} catch (error) {
 		console.error(error);
