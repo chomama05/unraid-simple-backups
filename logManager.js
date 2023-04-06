@@ -62,7 +62,8 @@ async function getLogData(logFileLocation) {
 		const logData = await fs.readFile(logFilePath, 'utf8');
 		return logData;
 	} catch (error) {
-		throw new Error('Error getting log data');
+		console.error(error);
+		throw new Error('getLogData() Failed - Error getting log data');
 	}
 }
 

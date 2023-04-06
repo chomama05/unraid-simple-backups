@@ -105,6 +105,7 @@ app.get('/api/log/:logFileLocation', async (req, res) => {
     const logData = await getLogData(buffer.toString());
     res.type('text/plain').send(logData);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Error getting log data' });
   }
 });
