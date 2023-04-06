@@ -12,7 +12,7 @@
 			<v-expansion-panels variant="popout" class="my-4">
 				<v-expansion-panel
 					v-for="logFile in sortedLogFiles"
-					v-on:group:selected="getLogFileContents($event, logFile.location)"
+					v-on:group:selected="getLogFileContents($event, backup.id, logFile.location)"
 					:key="logFile.date"
 					:title="`Log File: ${logFile.date}`"
 				>
@@ -54,13 +54,13 @@ export default {
 				return dateB.valueOf() - dateA.valueOf();
 			});
 		},
-		async getLogFileContents(event, location){
+		async getLogFileContents(event, backupId, location){
 			if(!event.value){
 				return;
 			}
 			this.logFileContent = '';
 			this.loading = true;
-			const content = await store.getLogFileContent(btoa(location));
+			const content = await store.getLogFileContent(backupId, btoa(location));
 			this.logFileContent = content;
 			this.loading = false;
 		}

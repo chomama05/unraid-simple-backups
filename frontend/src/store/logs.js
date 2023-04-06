@@ -45,7 +45,7 @@ export const useLogStore = defineStore('logs', {
       }
     },
 
-    async getLogFileContent(logLocation){
+    async getLogFileContent(backupId, logLocation){
       try{
         if(import.meta.env.MODE === 'development'){
           return new Promise((resolve, reject) => {
@@ -56,7 +56,7 @@ export const useLogStore = defineStore('logs', {
           });   
         }
 
-        const response = await axios.get(`/api/log/${logLocation}`);
+        const response = await axios.get(`/api/log/${backupId}/${logLocation}`);
         return response.data;
       }
       catch(error) {
