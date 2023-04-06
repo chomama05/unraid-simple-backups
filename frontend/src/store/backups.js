@@ -36,6 +36,11 @@ export const useBackupsStore = defineStore('backups', {
       }
     },
 
+    getLocalBackup(id){
+      const backup = this.backups.find(item => item.id == id);
+      return backup;
+    },
+
     async getBackup(id){
       this.loading = true;
       try{

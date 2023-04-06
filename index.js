@@ -3,6 +3,7 @@ const express = require('express');
 const http = require('http');
 const { Server: WebSocketServer } = require('ws');
 const { createCronJob, updateCronJob, deleteCronJob, loadCronJobsFromDatabase } = require('./cronManager');
+const { getLogs, getLogData } = require('./logManager');
 const { searchDirectories, createNewDirectory } = require('./helpers');
 const {
   createBackupsTable,
@@ -27,6 +28,8 @@ app.get(/^(?!\/api).*$/, (req, res) => {
 });
 
 // API routes
+
+// Backups
 app.get('/api/backups', async (req, res) => {
   const backups = await getBackups();
   res.json(backups);
@@ -61,6 +64,7 @@ app.delete('/api/backups/:id', async (req, res) => {
   res.sendStatus(204);
 });
 
+// Directories
 app.get('/api/directories', async (req, res) => {
   const search = req.query.search || '';
   const directories = await searchDirectories(search);
@@ -83,6 +87,27 @@ app.post('/api/directory', async (req, res) => {
     res.status(500).json({ message: 'Failed to create new directory.', error: error.message });
   }
 });
+
+// Logs
+app.get('/api/logs', async (req, res) => {
+  try {
+    const logs = await getLogs();
+    res.json(logs);
+  } catch (error) {
+    res.status(500).json({ message: 'Error getting logs' });
+  }
+});
+
+app.get('/api/log/:logFileLocation', async (req, res) => {
+  try {
+    const logFileLocation = req.params.logFileLocation;
+    const logData = await getLogData(logFileLocation);
+    res.type('text/plain').send(logData);
+  } catch (error) {
+    res.status(500).json({ message: 'Error getting log data' });
+  }
+});
+
 
 // WebSocket handling
 wss.on('connection', (ws) => {

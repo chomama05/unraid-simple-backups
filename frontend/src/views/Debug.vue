@@ -3,16 +3,16 @@
       <template #middle>
 
         <v-card class="flat-card">
-          <v-tabs v-model="tab" bg-color="#393053" color="white" :grow="true" class="tabs">
+          <v-tabs fixed-tabs v-model="tab" bg-color="#393053" color="white" class="tabs">
             <v-tab color="white" value="one">Database</v-tab>
-            <v-tab color="white" value="two">Something</v-tab>
+            <v-tab color="white" value="two">Logs</v-tab>
             <v-tab color="white" value="three">Something Else</v-tab>
           </v-tabs>
 
           <v-card-text>
             <v-window v-model="tab">
               <v-window-item value="one">
-                TODO 1
+                <debug-database></debug-database>
               </v-window-item>
 
               <v-window-item value="two">
@@ -37,6 +37,7 @@
   export default {
     components: {
       Layout,
+      DebugDatabase
     },
     data() {
       return {
@@ -48,5 +49,12 @@
   </script>
   
 <style scoped>
-
+.flat-card {
+	display: flex;
+	flex-direction: column;
+	border-radius: 0 !important;
+	height: 100vh;
+	overflow-y: auto;
+	flex-grow: 1;
+}
 </style>

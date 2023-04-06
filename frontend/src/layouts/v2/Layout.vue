@@ -14,7 +14,7 @@
 				:type="alert.type" @click:close="closeAlert()"></v-alert>
 			<v-container fluid class="full-height pa-0">
 				<v-row class="full-height" no-gutters>
-					<v-col cols="4" class="overflow-y-auto middleColumn">
+					<v-col cols="4" class="overflow-y-auto middleColumn" :style="`background-color: ${middleColumnColor};`">
 						<slot name="middle"></slot>
 					</v-col>
 					<v-col cols="8" class="overflow-y-auto">
@@ -35,6 +35,9 @@ const store = useAppStore();
 
 export default {
 	name: 'Layout',
+	props: {
+		middleColumnColor: String
+	},
 	components: {
 		logoSvg,
 		sideBar

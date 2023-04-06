@@ -135,7 +135,7 @@
 
 						<v-card-actions>
 							<v-btn rounded="0" color="black" prepend-icon="mdi-pencil" :to="`/configurator/${backup.id}`">Edit</v-btn>
-							<v-btn rounded="0" color="gray" prepend-icon="mdi-post-outline">See logs</v-btn>
+							<v-btn rounded="0" color="gray" prepend-icon="mdi-post-outline" :to="`/logs/${backup.id}`">See logs</v-btn>
 							<v-spacer></v-spacer>
 							<v-btn rounded="0" color="red" prepend-icon="mdi-delete" @click="openDeleteBackupDialog()">Delete</v-btn>
 						</v-card-actions>

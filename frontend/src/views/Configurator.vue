@@ -19,11 +19,6 @@
     },
     data() {
       return {
-        backups: [
-          { name: 'Backup 1', details: 'Backup 1 details' },
-          { name: 'Backup 2', details: 'Backup 2 details' },
-          // Add more backups here
-        ],
         selectedBackup: null,
       }
     },

@@ -38,6 +38,7 @@
     methods: {
       changeSelectedBackup(backup){
         this.selectedBackup = backup;
+        this.$router.push({ name: 'home', params: { id: this.selectedBackup.id } })
       },
       resetSelectedBackup(){
         console.log('resetSelectedBackup: ');
@@ -45,6 +46,7 @@
         store.fetchBackups();
       }
     },
+    mounted(){}
   }
   </script>
   
