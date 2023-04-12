@@ -25,7 +25,7 @@ highest_exit_code=0
 if [ "$environment" = "development" ]; then
   case "$backup_type" in
     full)
-      find "$source" -type f >>"$log_file" 2>&1
+      rsync -avh --dry-run "$source" "$destination/backup_${timestamp}" >>"$log_file" 2>&1
       exit_code=$?
       ;;
     cumulative)
@@ -42,7 +42,7 @@ elif [ "$environment" = "production" ]; then
 	mkdir -p "$destination"
 	case "$backup_type" in
 		full)
-			tar -czvf "$destination/backup_${timestamp}.tar.gz" -C "$source" . >>"$log_file" 2>&1
+			rsync -avh --progress "$source" "$destination/backup_${timestamp}" >>"$log_file" 2>&1
 			exit_code=$?
 			;;
 		cumulative)

@@ -1,6 +1,5 @@
 const path = require('path');
 const express = require('express');
-const bodyParser = require("body-parser");
 const http = require('http');
 const { Server: WebSocketServer } = require('ws');
 const { createCronJob, updateCronJob, deleteCronJob, loadCronJobsFromDatabase } = require('./cronManager');
